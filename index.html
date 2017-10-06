@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>打气球</title>
+	<style type="text/css">
+	*{
+		margin: 0px;
+		padding: 0px;
+	}
+	body{
+		overflow: hidden;
+	}
+		.ballon{
+			position: absolute;
+			/*top: 50%;
+			left: 50%;*/
+			width: 160px;
+			height: 160px;
+			background: #faf9f9;
+			border-radius:50% 50% 25% 50%; 
+			transform: rotate(45deg);
+			/*x y 羽化 半径 颜色 内外影音*/
+			box-shadow: -8px -8px 80px -8px #873940 inset;			
+
+		}
+		.ballon:after{
+			position: absolute;
+	
+			border: 8px solid transparent;
+			border-right-color: #873940;
+			border-radius: 50%;
+
+			content: "";/*这个必须要有没内容也要写*/
+			right: 2px;
+			bottom: 2px;
+			transform: rotate(45deg);
+			transform: rotate(45deg);
+		}
+	</style>
+</head>
+<body>
+	<div >
+		<div></div>
+	</div>
+</body>
+<script type="text/javascript">
+// 气球数量
+var oBallon=document.getElementById('ballon');
+	var num=10;
+	var wH=window.innerHeight;
+	var wW=window.innerWidth;
+	var bz=190;
+	var ballons=[];
+	var timer=null;
+	// timer=setInterval(move,1000/30)
+	// 定时器这个不丢帧 递归倒计时
+	// 一帧动画是1000/60;
+	function recall(){
+		move();
+		timer=setTimeout(arguments.callee,1000/30)
+	}
+	// recall();
+
+	function init(num){//函数封装初始化
+	var fragment=document.createDocumentFragment();//创建节点片段解决回流问题
+		for(var i=0,n=num;i<n;i++){
+	var oBallon=document.createElement('div');
+	// var randomX=Math.max(0,random);
+   
+	oBallon.className="ballon";
+	oBallon.style.top=wH-bz+"px";
+	var randomX=~~(Math.random()*wW)-bz;//位运算
+	randomX=Math.max(0,randomX);//设置边界
+	
+	oBallon.style.left=randomX+"px";
+	oBallon.speed=~~(Math.random()*8)+1;//自定义属性
+	// 添加到body节点
+	// document.body.appendChild(oBallon);
+	fragment.appendChild(oBallon);
+	ballons.push(oBallon);
+	console.log(oBallon);
+
+	}
+	document.body.appendChild(fragment);
+
+	}
+	init(15);
+	move();
+	timer=setInterval(move,60);
+   
+
+	function move(){
+		// 增加气球
+		var aBallons=document.querySelectorAll(".ballon");
+		// console.log(aBallons);
+		// console.log(ballons);
+		// 代码优化
+		// 循环所有气球
+		for(var i=0,len=ballons.length;i<len;i++){
+			ballons[i].style.top=ballons[i].offsetTop-ballons[i].speed+'px';
+			
+			if(ballons[i].offsetTop<-bz){
+				ballons[i].style.top=wH-bz+"px";
+
+			}
+
+
+		}
+		
+	}
+	
+// 点击气球爆炸用事件委托不浪费性能
+document.body.addEventListener('click',function(event){
+	console.log(event);
+	if(event.target.className==='ballon'){
+		// alert('点到气球了')
+		// 点到气球让气球消失
+		// event.target.parentNode.removeChild(event.target);
+		// this call apply bind 改变this指向c
+		boom.call(event.target);
+		init(1);
+		
+		var index=ballons.lastIndexOf(event.target);
+		ballons.splice(index,1);
+		console.log(ballons);
+		// boom.call(event.target,function(){
+		// 	this.parentNode.removeChild(this);
+		// }.bind(event.target));//替换函数内部的this去执行
+	}
+});
+
+function boom(){
+	console.log(this)
+	var rotate=[30,80];
+	var index=0;
+	console.log(this)
+	this.timer=setInterval(function(){
+		index++;//0,1,2,3,4
+		index%=2;//求摸取余值为0,1,0,1循环
+		this.speed++;
+		this.style.top=this.offsetTop-this.speed+"px";
+		this.style.width=this.offsetWidth-10+"px";
+		this.style.height=this.offsetHeight-10+"px";
+		this.style.transform='rotate('+rotate[index]+'deg)';
+	}.bind(this),1000/60);
+		
+}
+
+</script>
+</html>
+<!-- after before 伪元素 伪类 -->
+<!-- js基于原型的动态解释性脚本语言 -->
+<!-- 作用：
+1.响应用户操作
+2.操作DOM元素 增删改查
+3.数据交互AJAX JSON JSONP 正则表达式
+4.造轮子 JQuery angular React Vue NodeJS
+setInterval会丢帧
+一般用setTimeout递归
+
+
+
+ -->
